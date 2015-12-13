@@ -1,6 +1,6 @@
 <?php
 
-namespace Mbarwick83\TwitterApi;
+namespace Mbarwick83\TwitterApi\Lib;
 
 /**
  * Handle setting and storing config for TwitterOAuth.

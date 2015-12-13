@@ -1,6 +1,6 @@
 <?php
 
-namespace Mbarwick83\TwitterApi;
+namespace Mbarwick83\TwitterApi\Lib\Util;
 
 /**
  * @author louis <louis@systemli.org>

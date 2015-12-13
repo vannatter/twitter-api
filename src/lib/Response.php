@@ -1,6 +1,6 @@
 <?php
 
-namespace Mbarwick83\TwitterApi;
+namespace Mbarwick83\TwitterApi\Lib;
 
 /**
  * The result of the most recent API request.

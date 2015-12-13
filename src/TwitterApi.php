@@ -9,6 +9,8 @@ use Mbarwick83\TwitterApi\Lib\Token;
 use Mbarwick83\TwitterApi\Lib\Response;
 use Mbarwick83\TwitterApi\Lib\TwitterOAuthException;
 use Mbarwick83\TwitterApi\Lib\Util;
+use Mbarwick83\TwitterApi\Lib\Config;
+use Mbarwick83\TwitterApi\Lib\Request;
 
 /**
  * TwitterOAuth class for interacting with the Twitter API.
@@ -40,10 +42,11 @@ class TwitterApi extends Config
      * @param string|null $oauthToken       The Client Token (optional)
      * @param string|null $oauthTokenSecret The Client Token Secret (optional)
      */
-    public function __construct($consumerKey, $consumerSecret, $oauthToken = null, $oauthTokenSecret = null)
+    public function __construct($oauthToken = null, $oauthTokenSecret = null)
     {
         $consumerKey = config('twitteroauth.consumer_key');
         $consumerSecret = config('twitteroauth.consumer_secret');
+        $callbackUrl = config('twitteroauth.callback_url');
 
         $this->resetLastResponse();
         $this->signatureMethod = new HmacSha1();

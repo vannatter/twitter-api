@@ -1,6 +1,6 @@
 <?php
 
-namespace Mbarwick83\TwitterApi;
+namespace Mbarwick83\TwitterApi\Lib;
 
 use Mbarwick83\TwitterApi\Lib\Consumer;
 use Mbarwick83\TwitterApi\Lib\Token;
