@@ -32,6 +32,7 @@ To publish Shorty's configuration file, run the following `vendor:publish` comma
 
 ```
 php artisan vendor:publish --provider="Mbarwick83\TwitterApi\TwitterApiServiceProvider"
+```
 
 ## Contributing
 
