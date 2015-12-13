@@ -53,7 +53,7 @@ $url = TwitterApi::authorizeUrl();
 return $url;
 ```
 
-#####Get user's access tokens and details
+#####Get user's access tokens
 
 At this point we will use the temporary request token to get the long lived access_token that authorized to act as the user.
 
@@ -75,7 +75,7 @@ Route::get('oauth/twitter', function(Request $request) {
 });
 ```
 
-**This will return an object like the following. This is the important part where you save the credentials to your database of choice.**
+**This will return an object like the following. This is the important part where you save the credentials to your database of choice to make future calls.**
 
 ```
 {
