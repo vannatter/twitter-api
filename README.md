@@ -53,6 +53,40 @@ $url = TwitterApi::authorizeUrl();
 return $url;
 ```
 
+#####Get user's access tokens and details
+
+At this point we will use the temporary request token to get the long lived access_token that authorized to act as the user.
+
+``` php
+Route::get('oauth/twitter', function(Request $request) {
+    
+    // If the oauth_token is different from the one you sent them to Twitter with, abort authorization
+    if (isset($request->oauth_token) && Session::get('oauth_token') !== $request->oauth_token) 
+    {
+        Session::forget('oauth_token');
+        Session::forget('oauth_token_secret');
+        abort(404);
+    }
+
+    $twitter = new TwitterApi(Session::get('oauth_token'), Session::get('oauth_token_secret'));
+    $access_token = $twitter->accessToken($request->oauth_verifier);
+
+    return $access_token;
+});
+```
+
+**This will return an object like the following. This is the important part where you save the credentials to your database of choice.**
+
+```
+{
+	"oauth_token": "24073951-WiFyIePIerPAhQuoZ8VUMq8I4df14jzMcYR7uE6rJ7",
+	"oauth_token_secret": "b1lSZ2cPk4DbTP934SCfn1BTVPljdvMEMqSy8asczIGFh",
+	"user_id": "24133471",
+	"screen_name": "MikeBarwick",
+	"x_auth_expires": "0"
+}
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.
