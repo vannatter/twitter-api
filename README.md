@@ -20,7 +20,7 @@ Then in `config/app.php` add the following to the `providers` array:
 Mbarwick83\TwitterApi\TwitterApiServiceProvider::class
 ```
 
-Also in `config/app.php`, add the Facade class to the `aliases` array:
+Also in `config/app.php`, add the Facade class to the `aliases` array, should you want to use it:
 
 ```
 'TwitterApi'    => Mbarwick83\TwitterApi\Facades\TwitterApi::class
@@ -38,10 +38,15 @@ This will create a twitter-api.php file in your config directory. Here you **mus
 
 ## Usage
 
-**Be sure to include the namespace for the class wherever you plan to use this library**
+**Be sure to include the namespace for the class wherever you plan to use this library and set construct**
 
 ```
-use Mbarwick83\TwitterApi\Facades\TwitterApi;
+use Mbarwick83\TwitterApi\TwitterApi;
+
+public function __construct(TwitterApi $twitter)
+{
+    $this->twitter = $twitter;
+}
 ```
 
 #####Generate Authorize URL:
@@ -49,7 +54,7 @@ use Mbarwick83\TwitterApi\Facades\TwitterApi;
 This generates a URL that points users to Twitter's authorization page where they can authorize your app. It lists permissions being granted and allow/deny buttons.
 
 ``` php
-$url = TwitterApi::authorizeUrl();
+$url = $this->twitter->authorizeUrl();
 return $url;
 ```
 
