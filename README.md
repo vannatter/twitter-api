@@ -34,6 +34,25 @@ To publish Shorty's configuration file, run the following `vendor:publish` comma
 php artisan vendor:publish --provider="Mbarwick83\TwitterApi\TwitterApiServiceProvider"
 ```
 
+This will create a twitter-api.php file in your config directory. Here you **must** enter your Twitter App Consumer Key, Consumer Secret, and Callback URL. Create your app at [https://apps.twitter.com](https://apps.twitter.com).
+
+## Usage
+
+**Be sure to include the namespace for the class wherever you plan to use this library**
+
+```
+use Mbarwick83\TwitterApi\Facades\TwitterApi;
+```
+
+#####Generate Authorize URL:
+
+This generates a URL that points users to Twitter's authorization page where they can authorize your app. It lists permissions being granted and allow/deny buttons.
+
+``` php
+$url = TwitterApi::authorizeUrl();
+return $url;
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) and [CONDUCT](CONDUCT.md) for details.

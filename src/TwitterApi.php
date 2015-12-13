@@ -11,6 +11,7 @@ use Mbarwick83\TwitterApi\Lib\TwitterOAuthException;
 use Mbarwick83\TwitterApi\Lib\Util;
 use Mbarwick83\TwitterApi\Lib\Config;
 use Mbarwick83\TwitterApi\Lib\Request;
+use Session;
 
 /**
  * TwitterOAuth class for interacting with the Twitter API.
@@ -24,29 +25,25 @@ class TwitterApi extends Config
     const UPLOAD_HOST = 'https://upload.twitter.com';
     const UPLOAD_CHUNK = 40960; // 1024 * 40
 
-    /** @var Response details about the result of the last request */
     private $response;
-    /** @var string|null Application bearer token */
     private $bearer;
-    /** @var Consumer Twitter application details */
     private $consumer;
-    /** @var Token|null User access token details */
     private $token;
-    /** @var HmacSha1 OAuth 1 signature type used by Twitter */
     private $signatureMethod;
+    private $callbackUrl;
+
     /**
      * Constructor
      *
-     * @param string      $consumerKey      The Application Consumer Key
-     * @param string      $consumerSecret   The Application Consumer Secret
      * @param string|null $oauthToken       The Client Token (optional)
      * @param string|null $oauthTokenSecret The Client Token Secret (optional)
      */
     public function __construct($oauthToken = null, $oauthTokenSecret = null)
     {
-        $consumerKey = config('twitteroauth.consumer_key');
-        $consumerSecret = config('twitteroauth.consumer_secret');
-        $callbackUrl = config('twitteroauth.callback_url');
+        $consumerKey = config('twitter-api.consumer_key');
+        $consumerSecret = config('twitter-api.consumer_secret');
+
+        $this->callbackUrl = config('twitter-api.callback_url');
 
         $this->resetLastResponse();
         $this->signatureMethod = new HmacSha1();
@@ -59,6 +56,7 @@ class TwitterApi extends Config
             $this->bearer = $oauthTokenSecret;
         }
     }
+
     /**
      * @param string $oauthToken
      * @param string $oauthTokenSecret
@@ -67,6 +65,7 @@ class TwitterApi extends Config
     {
         $this->token = new Token($oauthToken, $oauthTokenSecret);
     }
+
     /**
      * @return string|null
      */
@@ -74,6 +73,7 @@ class TwitterApi extends Config
     {
         return $this->response->getApiPath();
     }
+
     /**
      * @return int
      */
@@ -81,6 +81,7 @@ class TwitterApi extends Config
     {
         return $this->response->getHttpCode();
     }
+
     /**
      * @return array
      */
@@ -88,6 +89,7 @@ class TwitterApi extends Config
     {
         return $this->response->getXHeaders();
     }
+
     /**
      * @return array|object|null
      */
@@ -95,6 +97,7 @@ class TwitterApi extends Config
     {
         return $this->response->getBody();
     }
+
     /**
      * Resets the last response cache.
      */
@@ -102,6 +105,40 @@ class TwitterApi extends Config
     {
         $this->response = new Response();
     }
+
+    /**
+     * Generate 'request_token' and build authorize URL.
+     *
+     * @return string
+     */
+    public function authorizeUrl()
+    {
+        $request_token = $this->oauth('oauth/request_token', array('oauth_callback' => $this->callbackUrl));
+
+        if ($request_token)
+        {
+            Session::set('oauth_token', $request_token['oauth_token']);
+            Session::set('oauth_token_secret', $request_token['oauth_token_secret']);
+
+            $url = $this->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
+            return $url;
+        }
+
+        throw new TwitterOAuthException($request_token);
+    }
+
+    /**
+     * Get access tokens and info for user.
+     *
+     * @return string
+     */
+    public function accessToken($oauth_verifier)
+    {
+        $access_token = $this->oauth("oauth/access_token", array("oauth_verifier" => $oauth_verifier));
+
+        return $access_token;
+    }
+
     /**
      * Make URLs for user browser navigation.
      *
@@ -117,6 +154,7 @@ class TwitterApi extends Config
         $query = http_build_query($parameters);
         return sprintf('%s/%s?%s', self::API_HOST, $path, $query);
     }
+
     /**
      * Make /oauth/* requests to the API.
      *
@@ -140,6 +178,7 @@ class TwitterApi extends Config
         $this->response->setBody($response);
         return $response;
     }
+
     /**
      * Make /oauth2/* requests to the API.
      *
@@ -161,6 +200,7 @@ class TwitterApi extends Config
         $this->response->setBody($response);
         return $response;
     }
+
     /**
      * Make GET requests to the API.
      *
@@ -173,6 +213,7 @@ class TwitterApi extends Config
     {
         return $this->http('GET', self::API_HOST, $path, $parameters);
     }
+
     /**
      * Make POST requests to the API.
      *
@@ -185,6 +226,7 @@ class TwitterApi extends Config
     {
         return $this->http('POST', self::API_HOST, $path, $parameters);
     }
+
     /**
      * Make DELETE requests to the API.
      *
@@ -197,6 +239,7 @@ class TwitterApi extends Config
     {
         return $this->http('DELETE', self::API_HOST, $path, $parameters);
     }
+
     /**
      * Make PUT requests to the API.
      *
@@ -209,6 +252,7 @@ class TwitterApi extends Config
     {
         return $this->http('PUT', self::API_HOST, $path, $parameters);
     }
+
     /**
      * Upload media to upload.twitter.com.
      *
@@ -226,6 +270,7 @@ class TwitterApi extends Config
             return $this->uploadMediaNotChunked($path, $parameters);
         }
     }
+
     /**
      * Private method to upload media (not chunked) to upload.twitter.com.
      *
@@ -241,6 +286,7 @@ class TwitterApi extends Config
         $parameters['media'] = $base;
         return $this->http('POST', self::UPLOAD_HOST, $path, $parameters);
     }
+
     /**
      * Private method to upload media (chunked) to upload.twitter.com.
      *
@@ -277,6 +323,7 @@ class TwitterApi extends Config
         ]);
         return $finalize;
     }
+
     /**
      * @param string $method
      * @param string $host
@@ -295,6 +342,7 @@ class TwitterApi extends Config
         $this->response->setBody($response);
         return $response;
     }
+
     /**
      * Format and sign an OAuth / API request
      *
@@ -320,6 +368,7 @@ class TwitterApi extends Config
         }
         return $this->request($request->getNormalizedHttpUrl(), $method, $authorization, $parameters);
     }
+
     /**
      * Make an HTTP request
      *
@@ -387,6 +436,7 @@ class TwitterApi extends Config
         curl_close($curlHandle);
         return $responseBody;
     }
+
     /**
      * Get the header info to store.
      *
@@ -406,6 +456,7 @@ class TwitterApi extends Config
         }
         return $headers;
     }
+
     /**
      * Encode application authorization header with base64.
      *
