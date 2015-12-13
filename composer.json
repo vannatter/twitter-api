@@ -6,7 +6,7 @@
         "oauth",
         "REST",
         "api",
-        "laravel",
+        "laravel"
     ],
     "homepage": "https://github.com/mbarwick83/twitter-api",
     "license": "MIT",
