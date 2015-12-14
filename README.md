@@ -4,7 +4,7 @@
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Laravel 5.1 wrapper for the most popular PHP library for use with the Twitter OAuth REST API. https://github.com/abraham/twitteroauth
+Laravel 5.1 wrapper/extension of the popular PHP library for the Twitter OAuth REST API. https://github.com/abraham/twitteroauth. This package has been modified from the original and updates are not pulled direcetly from Abraham's package.
 
 ## Installation
 
@@ -63,6 +63,7 @@ return $url;
 At this point we will use the temporary request token to get the long lived access_token that authorized to act as the user.
 
 ``` php
+// This is the callback route, which would likely be a controller method. But for example purposes, see below...
 Route::get('oauth/twitter', function(Request $request) {
     
     // If the oauth_token is different from the one you sent them to Twitter with, abort authorization
