@@ -21,7 +21,7 @@ class TwitterApiServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/config/twitterapi.php' => config_path('twitter-api.php'),
+            __DIR__.'/config/TwitterApi.php' => config_path('twitter-api.php'),
         ], 'config');
     }
 
